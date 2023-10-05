@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_alquileres/pages/home_page.dart';
 import 'package:gestion_alquileres/pages/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  //habilita codigo nativo para que firebase funciones bien
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

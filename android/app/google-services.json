@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "871968641204",
+    "project_id": "gestion-alquiler",
+    "storage_bucket": "gestion-alquiler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871968641204:android:f8ae797da082fa850307e1",
+        "android_client_info": {
+          "package_name": "com.courtny.gestion_alquileres"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD16xCG5YZxelm4EzpS9voYPyiO4uMkNsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

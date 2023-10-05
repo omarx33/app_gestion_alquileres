@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gestion_alquileres/pages/registro_page.dart';
+import 'package:gestion_alquileres/ui/general/colores.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -45,19 +46,19 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 28),
                     TextFormField(
                       style: TextStyle(
-                        color: Color.fromARGB(255, 252, 232, 231),
+                        color: blancoColor,
                         fontSize: 18,
                       ),
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(vertical: 14),
                         prefixIcon: Icon(
                           Icons.email,
-                          color: const Color.fromARGB(255, 252, 232, 231),
+                          color: blancoColor,
                         ),
 
                         labelText: 'Correo',
                         labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 252, 232, 231),
+                          color: blancoColor,
                         ),
                         //filled para activar el backgraund del input
                         enabledBorder: UnderlineInputBorder(
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 25),
                     TextFormField(
                       style: TextStyle(
-                        color: Color.fromARGB(255, 252, 232, 231),
+                        color: blancoColor,
                         fontSize: 18,
                       ),
                       obscureText: textoOculto,
@@ -83,16 +84,16 @@ class _LoginPageState extends State<LoginPage> {
                         contentPadding: EdgeInsets.symmetric(vertical: 14),
                         prefixIcon: Icon(
                           Icons.lock,
-                          color: const Color.fromARGB(255, 252, 232, 231),
+                          color: blancoColor,
                         ),
                         labelText: "Contraseña",
                         labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 252, 232, 231),
+                          color: blancoColor,
                         ),
                         //filled para activar el backgraund del input
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 252, 232, 231),
+                            color: blancoColor,
                           ), // Borde inferior rojo por defecto
                         ),
                         focusedBorder: UnderlineInputBorder(
@@ -109,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                             textoOculto
                                 ? Icons.visibility_off
                                 : Icons.visibility,
-                            color: const Color.fromARGB(255, 252, 232, 231),
+                            color: blancoColor,
                           ),
                         ),
                       ),
@@ -134,7 +135,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 30),
                     Text(
-                      "O Ingresa con redes sociales",
+                      "O Ingresa con tus redes sociales",
+                      style: TextStyle(
+                        color: blancoColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                     ),
                     SizedBox(height: 30),
                     SizedBox(
@@ -175,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 252, 232, 231),
+                              color: blancoColor,
                             ),
                           ),
                         ),
