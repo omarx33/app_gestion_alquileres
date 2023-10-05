@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-miSnackBarSuccess(BuildContext context, String texto) {
+miSnackBarSuccess(BuildContext context, String texto, Color color) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: color,
         content: Row(
           children: [
             Icon(

@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_alquileres/pages/home_page.dart';
 import 'package:gestion_alquileres/pages/registro_page.dart';
 import 'package:gestion_alquileres/ui/general/colores.dart';
+import 'package:gestion_alquileres/ui/widgets/snack_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -9,7 +12,40 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController _correoController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool textoOculto = true;
+
+  _login() async {
+    try {
+      if (formKey.currentState!.validate()) {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _correoController.text,
+          password: _passwordController.text,
+        );
+
+        // print(userCredential);
+        if (userCredential.user != null) {
+          //con esto si se loguea ira  a homepage y si retrocede las vistas de logis y registros no se visualizaran porque ya esta logueado
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+              (route) => false);
+        }
+      }
+    } on FirebaseAuthException catch (error) {
+      print(error.code);
+      if (error.code == "INVALID_LOGIN_CREDENTIALS") {
+        miSnackBarSuccess(
+          context,
+          "Error con sus datos de registro",
+          Colors.redAccent,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,160 +70,181 @@ class _LoginPageState extends State<LoginPage> {
                   tileMode: TileMode.mirror,
                 ),
               ),
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    SizedBox(height: Alto * 0.10),
-                    SvgPicture.asset(
-                      "assets/img/casa.svg",
-                      height: 120,
-                    ),
-                    SizedBox(height: 28),
-                    TextFormField(
-                      style: TextStyle(
-                        color: blancoColor,
-                        fontSize: 18,
+              child: Form(
+                key: formKey,
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      SizedBox(height: Alto * 0.10),
+                      SvgPicture.asset(
+                        "assets/img/casa.svg",
+                        height: 120,
                       ),
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
-                        prefixIcon: Icon(
-                          Icons.email,
+                      SizedBox(height: 28),
+                      TextFormField(
+                        style: TextStyle(
                           color: blancoColor,
+                          fontSize: 18,
                         ),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: blancoColor,
+                          ),
 
-                        labelText: 'Correo',
-                        labelStyle: TextStyle(
-                          color: blancoColor,
-                        ),
-                        //filled para activar el backgraund del input
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color.fromARGB(255, 252, 232,
-                                  231)), // Borde inferior rojo por defecto
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color.fromARGB(255, 252, 232,
-                                  231)), // Borde inferior rojo cuando tiene el foco
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 25),
-                    TextFormField(
-                      style: TextStyle(
-                        color: blancoColor,
-                        fontSize: 18,
-                      ),
-                      obscureText: textoOculto,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          color: blancoColor,
-                        ),
-                        labelText: "Contraseña",
-                        labelStyle: TextStyle(
-                          color: blancoColor,
-                        ),
-                        //filled para activar el backgraund del input
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: blancoColor,
-                          ), // Borde inferior rojo por defecto
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color.fromARGB(255, 252, 232,
-                                  231)), // Borde inferior rojo cuando tiene el foco
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            textoOculto = !textoOculto;
-                            setState(() {});
-                          },
-                          icon: Icon(
-                            textoOculto
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                          labelText: 'Correo',
+                          labelStyle: TextStyle(
                             color: blancoColor,
                           ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 35),
-                    SizedBox(
-                      height: 45,
-                      width: 230,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.check),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueGrey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+                          //filled para activar el backgraund del input
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: const Color.fromARGB(255, 252, 232,
+                                    231)), // Borde inferior rojo por defecto
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: const Color.fromARGB(255, 252, 232,
+                                    231)), // Borde inferior rojo cuando tiene el foco
                           ),
                         ),
-                        label: Text(
-                          "Ingresar",
-                        ),
+                        controller: _correoController,
+                        validator: (String? value) {
+                          if (value != null && value.isEmpty) {
+                            //vacio o null
+                            return "Campo Obligatorio";
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    SizedBox(height: 30),
-                    Text(
-                      "O Ingresa con tus redes sociales",
-                      style: TextStyle(
-                        color: blancoColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    SizedBox(
-                      height: 45,
-                      width: 230,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: SvgPicture.asset(
-                          "assets/icons/google.svg",
-                          color: Colors.white,
+                      SizedBox(height: 25),
+                      TextFormField(
+                        style: TextStyle(
+                          color: blancoColor,
+                          fontSize: 18,
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueGrey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+                        obscureText: textoOculto,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                          prefixIcon: Icon(
+                            Icons.lock,
+                            color: blancoColor,
                           ),
-                        ),
-                        label: Text(
-                          "Google",
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegistroPage(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            "Registrate",
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                          labelText: "Contraseña",
+                          labelStyle: TextStyle(
+                            color: blancoColor,
+                          ),
+                          //filled para activar el backgraund del input
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: blancoColor,
+                            ), // Borde inferior rojo por defecto
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: const Color.fromARGB(255, 252, 232,
+                                    231)), // Borde inferior rojo cuando tiene el foco
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              textoOculto = !textoOculto;
+                              setState(() {});
+                            },
+                            icon: Icon(
+                              textoOculto
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                               color: blancoColor,
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  ],
+                        controller: _passwordController,
+                        validator: (String? value) {
+                          if (value != null && value.isEmpty) {
+                            //vacio o null
+                            return "Campo Obligatorio";
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 35),
+                      SizedBox(
+                        height: 45,
+                        width: 230,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _login();
+                          },
+                          icon: Icon(Icons.check),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          label: Text(
+                            "Ingresar",
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Text(
+                        "O Ingresa con tus redes sociales",
+                        style: TextStyle(
+                          color: blancoColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      SizedBox(
+                        height: 45,
+                        width: 230,
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: SvgPicture.asset(
+                            "assets/icons/google.svg",
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          label: Text(
+                            "Google",
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RegistroPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Registrate",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: blancoColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

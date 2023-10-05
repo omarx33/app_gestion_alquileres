@@ -54,9 +54,14 @@ class _RegistroPageState extends State<RegistroPage> {
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == "weak-password") {
-        miSnackBarSuccess(context, "La contraseña es muy debil");
+        miSnackBarSuccess(
+            context, "La contraseña es muy debil", Colors.redAccent);
       } else if (error.code == "email-already-in-use") {
-        miSnackBarSuccess(context, "El correo ya existe");
+        miSnackBarSuccess(
+          context,
+          "El correo ya existe",
+          Colors.redAccent,
+        );
       }
     }
   }
