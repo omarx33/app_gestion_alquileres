@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_alquileres/models/usuario_model.dart';
 import 'package:gestion_alquileres/pages/home_page.dart';
 import 'package:gestion_alquileres/pages/registro_page.dart';
+import 'package:gestion_alquileres/serices/firestore_servicio.dart';
 import 'package:gestion_alquileres/ui/general/colores.dart';
 import 'package:gestion_alquileres/ui/widgets/snack_widget.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,8 +16,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
+  final GoogleSignIn _googleGignIn = GoogleSignIn(scopes: ["email"]);
   final TextEditingController _correoController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  FirestoreServicio miFirestoreServcio =
+      FirestoreServicio(coleccion: "usuarios");
   bool textoOculto = true;
 
   _login() async {
@@ -44,6 +50,56 @@ class _LoginPageState extends State<LoginPage> {
           Colors.redAccent,
         );
       }
+    }
+  }
+
+  _loginGoogle() async {
+    // _googleGignIn.signIn();
+    GoogleSignInAccount? googleSignInAccount = await _googleGignIn.signIn();
+    // print(googleSignInAccount);
+    if (googleSignInAccount == null) {
+      return;
+    }
+
+    //_googleSigInAuth contiene idToken y accessToken
+    GoogleSignInAuthentication _googleSigInAuth =
+        await googleSignInAccount.authentication;
+
+    OAuthCredential credential = GoogleAuthProvider.credential(
+      idToken: _googleSigInAuth.idToken,
+      accessToken: _googleSigInAuth.accessToken,
+    );
+
+    //registra las credenciales en firebase
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    if (userCredential.user != null) {
+      UsuarioModel usuarioModel = UsuarioModel(
+        nombres: userCredential.user!.displayName!,
+        correo: userCredential.user!.email!,
+      );
+
+      miFirestoreServcio.validaUsuario(userCredential.user!.email!).then(
+        (value) {
+          if (value == false) {
+            //si no existe el usuario agrega a la bd la sesion y redirige
+            miFirestoreServcio.agregarUser(usuarioModel).then(
+              (value) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                    (route) => false);
+              },
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+                (route) => false);
+          }
+        },
+      );
     }
   }
 
@@ -175,7 +231,8 @@ class _LoginPageState extends State<LoginPage> {
                         width: 230,
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            _login();
+                            // _login();
+                            _googleGignIn.signOut();
                           },
                           icon: Icon(Icons.check),
                           style: ElevatedButton.styleFrom(
@@ -203,7 +260,9 @@ class _LoginPageState extends State<LoginPage> {
                         height: 45,
                         width: 230,
                         child: ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            _loginGoogle();
+                          },
                           icon: SvgPicture.asset(
                             "assets/icons/google.svg",
                             color: Colors.white,
