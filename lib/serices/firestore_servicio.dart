@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gestion_alquileres/models/inquilinos_model.dart';
 import 'package:gestion_alquileres/models/usuario_model.dart';
 
 class FirestoreServicio {
@@ -15,6 +16,13 @@ class FirestoreServicio {
     DocumentReference documentReference =
         await _collectionReference.add(usuarioModel.toJson());
     return documentReference.id;
+  }
+
+  Future<String> agregarInquilino(InquilinosModel inquilinosModel) async {
+    DocumentReference documentReference =
+        await _collectionReference.add(inquilinosModel.toJson());
+    String id = documentReference.id;
+    return id;
   }
 
   Future<String> agregarUser(UsuarioModel userModel) async {
